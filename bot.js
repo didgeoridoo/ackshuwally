@@ -46,12 +46,14 @@ stream.on('tweet', function (tweet) {
   // Exclude retweets, because they're not the target
   // Only include tweets that are replies to other tweets, again to reduce false positives
   if(tweet.text.search(/^Actually\,/) !== -1 && tweet.retweeted === false && tweet.in_reply_to_user_id_str !== null) {
-
+    console.log("Potential pedantry detected...");
   	getUserObjectFromId(tweet.in_reply_to_user_id_str, function(recipient_data) {
-
+        console.log(tweet);
       // Only trigger if there is a substantial differential in follower count (punching up only!)
       if (tweet.user.followers_count / recipient_data.followers_count > 10) {
         respondWithImage(tweet.user, 'reply_01.png', 'Meme picture of a guy', 'ACTUALLY...');
+      } else {
+          console.log("Follower ratio too low. Aborting...");
       }
   	});
   	
