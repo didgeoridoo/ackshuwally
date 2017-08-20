@@ -1,0 +1,22 @@
+{
+  "name": "ackshuwally",
+  "version": "1.0.0",
+  "description": "A Twitter bot to take pedants down a notch",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/didgeoridoo/ackshuwally.git"
+  },
+  "author": "Geordie Kaytes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/didgeoridoo/ackshuwally/issues"
+  },
+  "homepage": "https://github.com/didgeoridoo/ackshuwally#readme",
+  "dependencies": {
+    "twit": "^2.2.9"
+  }
+}
