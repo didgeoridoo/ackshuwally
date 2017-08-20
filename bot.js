@@ -6,17 +6,13 @@ var T = new Twit({
   consumer_secret:      process.env.CONSUMER_SECRET,
   access_token:         process.env.ACCESS_TOKEN,
   access_token_secret:  process.env.ACCESS_SECRET,
-  timeout_ms:           60*1000,  // optional HTTP request timeout to apply to all requests.
+  timeout_ms:           60*1000,
 });
 
 function getUserObjectFromId(user_id, callback) {
 	T.get('users/show', {user_id}, function (err, data, res) {
 		callback(data);
 	});
-}
-
-function getFollowerRatio(firstUser, secondUser) {
-	return firstUser.followers_count / secondUser.followers_count;
 }
 
 function respondWithImage(userToRespondTo, imagePath, altText, tweetText) {
@@ -42,18 +38,21 @@ function respondWithImage(userToRespondTo, imagePath, altText, tweetText) {
 	})
 }
 
-var stream = T.stream('statuses/filter', { track: 'test018271231', language:'en' })
+var stream = T.stream('statuses/filter', { track: 'actually', language:'en' })
 
 stream.on('tweet', function (tweet) {
-  if(tweet.text.search(/^test018271231/) !== -1 && tweet.retweeted === false) {
+
+  // Limit to tweets that start "Actually," (including punctuation) to reduce false positives
+  // Exclude retweets, because they're not the target
+  // Only include tweets that are replies to other tweets, again to reduce false positives
+  if(tweet.text.search(/^Actually\,/) !== -1 && tweet.retweeted === false && tweet.in_reply_to_user_id_str !== null) {
 
   	getUserObjectFromId(tweet.in_reply_to_user_id_str, function(recipient_data) {
-  		console.log("Tweet: " + tweet.text);
-  		console.log("Tweeter ID: " + tweet.user.id);
-	  	console.log("Followers: " + tweet.user.followers_count);
-	  	console.log("Replying to ID: " + tweet.in_reply_to_user_id_str);
-	  	console.log("Target followers: " + recipient_data.followers_count);
-	  	respondWithImage(tweet.user, 'reply_01.png', 'Meme picture of a guy', 'ACTUALLY...');
+
+      // Only trigger if there is a substantial differential in follower count (punching up only!)
+      if (tweet.user.followers_count / recipient_data.followers_count > 10) {
+        respondWithImage(tweet.user, 'reply_01.png', 'Meme picture of a guy', 'ACTUALLY...');
+      }
   	});
   	
   }
